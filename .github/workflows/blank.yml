@@ -1,0 +1,99 @@
+import java.util.*;
+import java.util.regex.*;
+
+public class Main {
+
+    
+    static final String FULL_NAME = "john_doe";
+    static final String DOB = "17091999";       
+    static final String EMAIL = "john@xyz.com";
+    static final String ROLL_NUMBER = "ABCD123";
+
+    
+    static String alternateCapsReverse(String str) {
+        StringBuilder reversed = new StringBuilder(str).reverse();
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < reversed.length(); i++) {
+            char ch = reversed.charAt(i);
+            if (i % 2 == 0) {
+                result.append(Character.toUpperCase(ch));
+            } else {
+                result.append(Character.toLowerCase(ch));
+            }
+        }
+        return result.toString();
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.println("👉 Please enter JSON input in the format:");
+        System.out.println("   {\"data\":[\"a\",\"1\",\"334\",\"4\",\"R\",\"$\"]}\n");
+        System.out.print("Input: ");
+        String input = sc.nextLine();
+        sc.close();
+
+        try {
+            
+            int start = input.indexOf("[");
+            int end = input.lastIndexOf("]");
+            if (start == -1 || end == -1) {
+                throw new Exception("Invalid JSON format");
+            }
+            String arrayContent = input.substring(start + 1, end);
+
+            
+            String[] rawItems = arrayContent.split(",");
+            List<String> data = new ArrayList<>();
+            for (String item : rawItems) {
+                item = item.trim();
+                if (item.startsWith("\"") && item.endsWith("\"")) {
+                    item = item.substring(1, item.length() - 1);
+                }
+                if (!item.isEmpty()) data.add(item);
+            }
+
+            
+            List<String> evenNumbers = new ArrayList<>();
+            List<String> oddNumbers = new ArrayList<>();
+            List<String> alphabets = new ArrayList<>();
+            List<String> specialChars = new ArrayList<>();
+            int sum = 0;
+            StringBuilder alphaString = new StringBuilder();
+
+            for (String item : data) {
+                if (item.matches("-?\\d+")) {
+                    int num = Integer.parseInt(item);
+                    sum += num;
+                    if (num % 2 == 0) evenNumbers.add(item);
+                    else oddNumbers.add(item);
+                } else if (item.matches("[a-zA-Z]+")) {
+                    alphabets.add(item.toUpperCase());
+                    alphaString.append(item);
+                } else {
+                    specialChars.add(item);
+                }
+            }
+
+            String concatString = alternateCapsReverse(alphaString.toString());
+
+            
+            System.out.println("\n✅ Output:");
+            System.out.println("{");
+            System.out.println("  \"is_success\": true,");
+            System.out.println("  \"user_id\": \"" + FULL_NAME + "_" + DOB + "\",");
+            System.out.println("  \"email\": \"" + EMAIL + "\",");
+            System.out.println("  \"roll_number\": \"" + ROLL_NUMBER + "\",");
+            System.out.println("  \"odd_numbers\": " + oddNumbers + ",");
+            System.out.println("  \"even_numbers\": " + evenNumbers + ",");
+            System.out.println("  \"alphabets\": " + alphabets + ",");
+            System.out.println("  \"special_characters\": " + specialChars + ",");
+            System.out.println("  \"sum\": \"" + sum + "\",");
+            System.out.println("  \"concat_string\": \"" + concatString + "\"");
+            System.out.println("}");
+        } catch (Exception e) {
+            System.out.println("\n❌ Invalid input. Please enter valid JSON.");
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+}
